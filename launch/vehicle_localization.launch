@@ -1,0 +1,17 @@
+<launch> 
+ 
+    <!-- Run the EKF Localization node -->
+    <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization">
+        <rosparam command="load" file="$(find vehicle_localization)/config/ekf_localization.yaml"/>
+    </node>
+
+    <node pkg="robot_localization" type="navsat_transform_node" name="nav_node">
+        <rosparam command="load" file="$(find vehicle_localization)/config/navsat.yaml"/>
+    </node>
+
+    <node pkg="vehicle_localization" type="main" name="main">
+        <!-- <rosparam command="load" file="$(find vehicle_localization)/config/navsat.yaml"/> -->
+    </node>
+    <!-- Error occurs when tried to launch -->
+ 
+</launch>
