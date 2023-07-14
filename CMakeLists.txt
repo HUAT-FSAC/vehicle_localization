@@ -4,9 +4,19 @@ project(vehicle_localization)
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
 
-## Find catkin macros and libraries
-## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
-## is used, also find other catkin packages
+# Eigen3
+find_package(Eigen3 REQUIRED)
+include_directories(${EIGEN3_INCLUDE_DIRS})
+
+# YAML support
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(YAML_CPP REQUIRED yaml-cpp)
+include_directories(${YAML_CPP_INCLUDEDIR})
+list(APPEND ALL_TARGET_LIBRARIES ${YAML_CPP_LIBRARIES})
+
+include_directories(${PROJECT_SOURCE_DIR}/3rd/GeographicLib/include/)
+# include_directories(${PROJECT_SOURCE_DIR}/include)
+
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
@@ -14,7 +24,13 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
 )
 
+add_library(DEPS SHARED
+  src/eskf.cpp
+  src/filter_flow.cpp
+)
+
 find_package(rostime REQUIRED)
+find_package(sensor_msgs REQUIRED)
 
 add_executable(vehicle_localization src/main.cpp)
 add_executable(nav_sat src/navsat_node.cpp)
@@ -27,9 +43,6 @@ install(FILES
   ${header_file}
   DESTINATION ${CATKIN_DEVEL_PREFIX}/include
 )
-# add_dependencies(vehicle_localization)
-## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
 
 catkin_package(
 #  INCLUDE_DIRS include
@@ -38,12 +51,6 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
-###########
-## Build ##
-###########
-
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
 include_directories(
   include
   /home/neko/Code/dev_ws/devel/include
