@@ -5,7 +5,6 @@
 #define FILTER_FLOW_H
 
 #include "eskf.h"
-// #include "eskf_qk.h"
 #include "ekf.h"
 #include "imu_flow.h"
 #include "gps_flow.h"
@@ -14,6 +13,7 @@
 #include <memory>
 #include <deque>
 #include <iostream>
+#include "common_msgs/HUAT_ASENSING.h"
 
 class FilterFlow
 {
@@ -21,27 +21,11 @@ public:
     FilterFlow() = default;
     FilterFlow(const std::string &work_space_path);
 
-    /*!
-     * 从本地文件中读取IMU和GPS的数据
-     * @return
-     */
-    bool ReadData();
-
-    /*!
-     * 对IMU和GPS数据进行时间戳对齐，该函数只在ESKF初始化时使用
-     * @return
-     */
-    bool ValidGPSAndIMUData();
-
-    bool ValidIMUData();
-
     bool ValidGPSData();
 
-    bool PushData(GPSData gps, IMUData imu);
-
-    bool Run();
-
-    bool TestRun();
+    //custom funcs
+    bool InitFilter();
+    bool Predict();
 
     /*!
      * 保存位姿，为kitti格式
@@ -50,13 +34,23 @@ public:
      */
     void SavePose(std::ofstream &ofs, const Eigen::Matrix4d &pose);
 
+    // void insertImuData(const IMUData &imu)
+    // {
+    //     imu_data_buff_.push_back(imu);
+    // }
+
+    // void insertGpsData(const GPSData &gps)
+    // {
+    //     gps_data_buff_.push_back(gps);
+    // }
+
 private:
     std::shared_ptr<FilterInterface> filter_ptr_; // 滤波方法
     std::shared_ptr<IMUFlow> imu_flow_ptr_;
     std::shared_ptr<GPSFlow> gps_flow_ptr_;
 
-    std::deque<IMUData> imu_data_buff_;
-    std::deque<GPSData> gps_data_buff_;
+    // std::deque<IMUData> imu_data_buff_(500);
+    // std::deque<GPSData> gps_data_buff_(500);
 
     IMUData curr_imu_data_;
     GPSData curr_gps_data_;
