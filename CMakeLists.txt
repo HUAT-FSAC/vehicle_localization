@@ -27,16 +27,25 @@ find_package(catkin REQUIRED COMPONENTS
 add_library(DEPS SHARED
   src/eskf.cpp
   src/filter_flow.cpp
+  src/gps_flow.cpp
+  src/filter_flow.cpp
+  3rd/GeographicLib/src/LocalCartesian.cpp
+  3rd/GeographicLib/src/Geocentric.cpp
+  3rd/GeographicLib/src/Math.cpp
 )
 
 find_package(rostime REQUIRED)
 find_package(sensor_msgs REQUIRED)
 
-add_executable(vehicle_localization src/main.cpp)
+add_executable(vehicle_localization src/main.cpp src/filter_flow.cpp)
 add_executable(nav_sat src/navsat_node.cpp)
 
+target_link_libraries(DEPS
+    ${ALL_TARGET_LIBRARIES}
+)
 
 target_link_libraries(vehicle_localization ${catkin_LIBRARIES})
+target_link_libraries(vehicle_localization DEPS)
 target_link_libraries(nav_sat ${catkin_LIBRARIES})
 
 install(FILES
