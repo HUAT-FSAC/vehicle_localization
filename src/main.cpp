@@ -1,56 +1,59 @@
-// copyright
+/* vehicle_localization
+ *
+ * handles msgs form imu and republish to /imu/data and
+ *
+ *
+ */
+
 #include "ros/ros.h"
 #include <ros/console.h>
 #include <ostream>
 #include <common_msgs/HUAT_ASENSING.h>
 #include "common_msgs/HUAT_Carstate.h"
 
-common_msgs::HUAT_ASENSING imu_msg;
+// funcs
+void handleIMUMsg(const common_msgs::HUAT_ASENSING::ConstPtr &msg);
 
-using namespace std;
 
 void handleIMUMsg(const common_msgs::HUAT_ASENSING::ConstPtr &msg)
 {
-    // cout << "handling msg from IMU" << endl;
-    imu_msg.latitude = msg -> latitude;
-    imu_msg.longitude = msg -> longitude;
-    imu_msg.altitude = msg -> altitude;
+    std::cout << "handling msg from IMU" << std::endl;
 
-    // cout << msg -> ins_status << endl;
-    cout.precision(15);
-    cout << "lat:" << imu_msg.latitude << "\t" << "lon:" << imu_msg.longitude << endl;
-    cout << "lat_std:" << imu_msg.latitude_std << "\t" << "lon:" << imu_msg.longitude_std << endl;
-    cout << "azimuth:" << msg -> azimuth << endl << endl;
-
+    std::cout.precision(15);
+    std::cout << "lat:" << msg->latitude << "\t"
+              << "lon:" << msg->longitude << std::endl;
+    std::cout << "sec of week:" << msg->sec_of_week	<< std::endl;
 }
 
-void publishOdomMsg()
-{
+// geometry_msgs::Quaternion calcQuaternion(double roll, double pitch, double yaw)
+// {
+//     geometry_msgs::Quaternion orientation;
 
-}
+//     orientation.w = cos(roll / 2) * cos(pitch / 2) * cos(yaw / 2) +
+//                     sin(roll / 2) * sin(pitch / 2) * sin(yaw / 2);
+//     orientation.x = sin(roll / 2) * cos(pitch / 2) * cos(yaw / 2) -
+//                     cos(roll / 2) * sin(pitch / 2) * sin(yaw / 2);
+//     orientation.y = cos(roll / 2) * sin(pitch / 2) * cos(yaw / 2) +
+//                     sin(roll / 2) * cos(pitch / 2) * sin(yaw / 2);
+//     orientation.z = cos(roll / 2) * cos(pitch / 2) * sin(yaw / 2) -
+//                     sin(roll / 2) * sin(pitch / 2) * cos(yaw / 2);
 
-void publishIMUMsg()
-{
-    
-}
+//     std::cout << "w:" << orientation.w << " x:" << orientation.x << " y:" << orientation.y << " z:" << orientation.z << std::endl;
+
+//     return orientation;
+// }
 
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "vehicle_localization");
-    // ROS_DEBUG("VL up and running...");
 
     ros::NodeHandle nh;
     ros::Subscriber imu = nh.subscribe("/INS/ASENSING_INS", 1, handleIMUMsg);
 
-    ros::Rate rate(10);
-    // 10 secs?
-
+    // imu_pub = nh.advertise<geometry_msgs::Imu>("/ins/data", 1);
 
     while (ros::ok())
     {
-        // ros::spinOnce();
-        // rate.sleep();
-        // why sleep?
         ros::spin();
     }
 }
