@@ -9,20 +9,11 @@
 #include "ekf.h"
 #include "imu_flow.h"
 #include "gps_flow.h"
-// #include "observability_analysis.h"
 #include "filter_interface.h"
 #include "ros/ros.h"
 #include <memory>
 #include <deque>
 #include <iostream>
-
-#include <common_msgs/HUAT_ASENSING.h>
-
-// bool insDataProcess(const common_msgs::HUAT_ASENSING::ConstPtr &msg);
-
-// ros::NodeHandle nh;
-// ros::Subscriber sub_ins = nh.subscribe("/INS/ASENSING", 500, insDataProcess);
-
 
 class FilterFlow
 {
@@ -46,6 +37,8 @@ public:
 
     bool ValidGPSData();
 
+    bool PushData(GPSData gps, IMUData imu);
+
     bool Run();
 
     bool TestRun();
@@ -62,15 +55,11 @@ private:
     std::shared_ptr<IMUFlow> imu_flow_ptr_;
     std::shared_ptr<GPSFlow> gps_flow_ptr_;
 
-    // ObservabilityAnalysis observability_analysis; // 可观测度分析工具
-
     std::deque<IMUData> imu_data_buff_;
     std::deque<GPSData> gps_data_buff_;
 
     IMUData curr_imu_data_;
     GPSData curr_gps_data_;
-
-    bool use_observability_analysis_ = false; // 是否进行可观测度分析
 
     const std::string work_space_path_;
     std::string data_path_;

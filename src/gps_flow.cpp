@@ -86,25 +86,25 @@ bool GPSFlow::ReadGPSData(const std::string &path, std::vector<GPSData>& gps_dat
 
         TransformCoordinate(gps_data.velocity);
 
-        std::getline(ssr_1, temp, ',');
-        gps_data.true_position_lla.x() = std::stod(temp);
+        // std::getline(ssr_1, temp, ',');
+        // gps_data.true_position_lla.x() = std::stod(temp);
 
-        std::getline(ssr_1, temp, ',');
-        gps_data.true_position_lla.y() = std::stod(temp);
+        // std::getline(ssr_1, temp, ',');
+        // gps_data.true_position_lla.y() = std::stod(temp);
 
-        std::getline(ssr_1, temp, ',');
-        gps_data.true_position_lla.z() = std::stod(temp);
+        // std::getline(ssr_1, temp, ',');
+        // gps_data.true_position_lla.z() = std::stod(temp);
 
-        std::getline(ssr_1, temp, ',');
-        gps_data.true_velocity.x() = std::stod(temp);
+        // std::getline(ssr_1, temp, ',');
+        // gps_data.true_velocity.x() = std::stod(temp);
 
-        std::getline(ssr_1, temp, ',');
-        gps_data.true_velocity.y() = std::stod(temp);
+        // std::getline(ssr_1, temp, ',');
+        // gps_data.true_velocity.y() = std::stod(temp);
 
-        std::getline(ssr_1, temp, ',');
-        gps_data.true_velocity.z() = std::stod(temp);
+        // std::getline(ssr_1, temp, ',');
+        // gps_data.true_velocity.z() = std::stod(temp);
 
-        TransformCoordinate(gps_data.true_velocity);
+        // TransformCoordinate(gps_data.true_velocity);
 
         LLA2NED(gps_data);
 
@@ -176,25 +176,25 @@ bool GPSFlow::ReadGPSData(const std::string &path, std::deque<GPSData>& gps_data
 
         TransformCoordinate(gps_data.velocity);
 
-        std::getline(ssr_1, temp, ',');
-        gps_data.true_position_lla.x() = std::stod(temp);
+        // std::getline(ssr_1, temp, ',');
+        // gps_data.true_position_lla.x() = std::stod(temp);
 
-        std::getline(ssr_1, temp, ',');
-        gps_data.true_position_lla.y() = std::stod(temp);
+        // std::getline(ssr_1, temp, ',');
+        // gps_data.true_position_lla.y() = std::stod(temp);
 
-        std::getline(ssr_1, temp, ',');
-        gps_data.true_position_lla.z() = std::stod(temp);
+        // std::getline(ssr_1, temp, ',');
+        // gps_data.true_position_lla.z() = std::stod(temp);
 
-        std::getline(ssr_1, temp, ',');
-        gps_data.true_velocity.x() = std::stod(temp);
+        // std::getline(ssr_1, temp, ',');
+        // gps_data.true_velocity.x() = std::stod(temp);
 
-        std::getline(ssr_1, temp, ',');
-        gps_data.true_velocity.y() = std::stod(temp);
+        // std::getline(ssr_1, temp, ',');
+        // gps_data.true_velocity.y() = std::stod(temp);
 
-        std::getline(ssr_1, temp, ',');
-        gps_data.true_velocity.z() = std::stod(temp);
+        // std::getline(ssr_1, temp, ',');
+        // gps_data.true_velocity.z() = std::stod(temp);
 
-        TransformCoordinate(gps_data.true_velocity);
+        // TransformCoordinate(gps_data.true_velocity);
 
         LLA2NED(gps_data);
 

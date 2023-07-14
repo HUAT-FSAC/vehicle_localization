@@ -41,6 +41,15 @@ void insDataCallback(const common_msgs::HUAT_ASENSING::ConstPtr &msg)
     imu.linear_accel.x() = msg -> x_acc;
     imu.linear_accel.y() = msg -> y_acc;
     imu.linear_accel.z() = msg -> z_acc;
+
+    // FilterFlow::imu_data_buff_.push_back(imu);
+    // FilterFlow::gps_data_buff_.push_back(gps);
+}
+
+bool FilterFlow::PushData(GPSData gps, IMUData imu)
+{
+    imu_data_buff_.push_back(imu);
+    gps_data_buff_.push_back(gps);
 }
 
 void initRos()
@@ -66,30 +75,7 @@ FilterFlow::FilterFlow(const std::string &work_space_path)
     YAML::Node config_node = YAML::LoadFile(config_file_path);
     data_path_ = config_node["data_path"].as<std::string>();
 
-    // code below selects desired filter type by designate in yml file
-
-    // std::string filter_method = config_node["filter_method"].as<std::string>();
-    // if (filter_method == "ESKF")
-    // {
-    //     filter_ptr_ = std::make_shared<ESKF>(config_node);
-    // }
-    // else if (filter_method == "EKF")
-    // {
-    //     filter_ptr_ = std::make_shared<EKF>(config_node);
-    // }
-    // else if (filter_method == "ESKFQK")
-    // {
-    //     filter_ptr_ = std::make_shared<ESKFQK>(config_node);
-    // }
-    // else
-    // {
-    //     printf("no corres filter method");
-    //     exit(-1);
-    // }
-
     filter_ptr_ = std::make_shared<ESKF>(config_node);
-
-    // printf("data_path: %s,  filter method: %s\n", data_path_.c_str(), filter_method.c_str());
 }
 
 // 读取GPS和IMU数据
@@ -189,6 +175,10 @@ bool FilterFlow::Run()
 
     filter_ptr_ -> Init(curr_gps_data_, curr_imu_data_);
 
+    // for some reasons
+    gps_data_buff_.pop_front();
+    imu_data_buff_.pop_front();
+
     // init file handles
     std::ofstream gt_file(work_space_path_ + "/data/gt.txt", std::ios::trunc);
     std::ofstream fused_file(work_space_path_ + "/data/fused.txt", std::ios::trunc);
@@ -196,10 +186,8 @@ bool FilterFlow::Run()
 
 
     // Remove unnecessary while loop
-    //
-    // while (!imu_data_buff_.empty() && !gps_data_buff_.empty())
-    // {
-
+    while (!imu_data_buff_.empty() && !gps_data_buff_.empty())
+    {
         // since last while loop has vaild GPS and IMU data, curr_data_ now is ONE time after privious data_
         curr_imu_data_ = imu_data_buff_.front();
         curr_gps_data_ = gps_data_buff_.front();
@@ -222,60 +210,14 @@ bool FilterFlow::Run()
             gps_data_buff_.pop_front();
         }
 
-        // if (use_observability_analysis_) {
-        //     Eigen::Matrix<double, 15, 15> F;
-        //     Eigen::Matrix<double, 3, 15> G;
-        //     Eigen::Matrix<double, 3, 1> Y;
-        //     filter_ptr_->GetFGY(F, G, Y);
-        //     observability_analysis.SaveFG(F, G, Y, curr_gps_data_.time);
-        // }
-        // printf("1\n");
-    // }
+        if (imu_data_buff_.empty() || gps_data_buff_.empty()) {
+            std::cout << "imu / gps is empty" << std::endl;
+        }
+    }
 
-    // if (use_observability_analysis_)
-    // {
-    //     observability_analysis.ComputeSOM();
-    //     observability_analysis.ComputeObservability();
-    // }
+
     return true;
 }
-
-// bool FilterFlow::TestRun()
-// {
-//     ReadData();
-
-//     while (!imu_data_buff_.empty() && !gps_data_buff_.empty())
-//     {
-//         if (!ValidGPSAndIMUData())
-//         {
-//             continue;
-//         }
-//         else
-//         {
-//             filter_ptr_->Init(curr_gps_data_, curr_imu_data_);
-//             std::cout << "\ntime: " << curr_gps_data_.time << std::endl;
-//             std::cout << "vel: " << filter_ptr_->GetVelocity().transpose() << std::endl;
-//             std::cout << "measure vel: " << curr_gps_data_.velocity.transpose() << std::endl;
-//             std::cout << "true vel: " << curr_gps_data_.true_velocity.transpose() << std::endl;
-//             std::cout << "time: " << curr_gps_data_.time << std::endl;
-//             break;
-//         }
-//     }
-
-//     std::ofstream gt_file(work_space_path_ + "/data/gt.txt", std::ios::trunc);
-//     std::ofstream fused_file(work_space_path_ + "/data/fused.txt", std::ios::trunc);
-//     std::ofstream measured_file(work_space_path_ + "/data/measured.txt", std::ios::trunc);
-
-//     while (!imu_data_buff_.empty() && !gps_data_buff_.empty())
-//     {
-//         curr_imu_data_ = imu_data_buff_.front();
-//         curr_gps_data_ = gps_data_buff_.front();
-//         filter_ptr_->Predict(curr_imu_data_);
-//         imu_data_buff_.pop_front();
-//         SavePose(fused_file, filter_ptr_->GetPose());
-//     }
-//     return true;
-// }
 
 // 保存前3行4列
 void FilterFlow::SavePose(std::ofstream &ofs, const Eigen::Matrix4d &pose)
