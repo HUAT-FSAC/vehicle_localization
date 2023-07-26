@@ -1,0 +1,8 @@
+<launch>
+
+<!-- how to determine type? -->
+  <node name="msg_handler" pkg="gps_imu_fusion" type="msg_handler"/>
+
+  <node name="main" pkg="gps_imu_fusion" type="main"/>
+
+</launch>
