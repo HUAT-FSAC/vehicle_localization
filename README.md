@@ -17,3 +17,7 @@
 - gyro(deg/s): x,y,z
 - gps_time?
   the timestamp that its data updates
+
+## 其他
+
+根据惯导文档📄，数据输出的频率是 100Hz。
